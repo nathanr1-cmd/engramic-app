@@ -1,0 +1,1 @@
+{"entities":[{"entity_type":"medication","name":"Lisinopril","dose":"10 mg","frequency":"once daily","route":"oral","reason":"Hypertension controlled","prescriber":null,"status":"active","start_date":null,"end_date":null,"negated":false,"discontinued":false,"explicit_state_change":true,"raw_text_span":"Lanjutkan Lisinopril 10 mg sekali sehari"}],"warnings":[],"source":"cache"}

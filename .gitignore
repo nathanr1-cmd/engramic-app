@@ -1,0 +1,27 @@
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Runtime databases and migrated graph state
+*.db
+*.db-shm
+*.db-wal
+graph_data.json
+graph_data.json.pre_sqlite_backup
+*.tmp
+
+# Uploaded/extracted clinical documents and generated output
+clinical_documents/
+output/
+
+# Local audits, working copies, and server logs
+tmp/
+*.log
+
+.vscode/
+.idea/

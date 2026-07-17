@@ -1,0 +1,46 @@
+{% extends "base.html" %}{% block title %}Doctor dashboard — Engramic{% endblock %}{% block content %}
+<header class="page-heading"><div><div class="eyebrow">THURSDAY · 16 JULY 2026</div><h1>Good evening, {{ user.name.split(' ')[-1] }}.</h1><p>Here’s the clinical picture across your patient records.</p></div><div class="header-actions"><button class="button secondary" id="load-demo" type="button">Load PRD demo</button><a class="button" href="/doctor/notes/new">+ Add clinical note</a></div></header>
+<div class="demo-loader-status" id="demo-status" role="status" aria-live="polite" hidden></div>
+<section class="metric-grid"><article class="signal-card tone-sky"><span>Patients</span><strong>{{ patients|length }}</strong><a href="/doctor/patients">View patient list →</a></article><article class="signal-card tone-mint"><span>Active medications</span><strong>{{ active_medications }}</strong><small>Across connected records</small></article><article class="signal-card {{ 'tone-coral attention' if conflicts else 'tone-neutral' }}"><span>Needs review</span><strong>{{ conflicts }}</strong><small>{{ 'Potential record conflicts' if conflicts else 'No open conflicts' }}</small><a href="/doctor/conflicts">Open review queue →</a></article></section>
+<section class="split"><article class="panel"><div class="panel-head"><div><span class="eyebrow">AUTHORIZED PATIENTS</span><h2>Patient records</h2></div><a href="/doctor/patients">View all</a></div>{% for p in patients[:5] %}<a class="patient-row" href="/doctor/patients/{{ p.id }}"><span class="avatar large">{{ p.name[0] }}</span><span><b>{{ p.name }}</b><small>{{ p.age or 'Age not set' }} · {{ p.gender or 'Not specified' }}</small></span><span class="row-action">Open record →</span></a>{% else %}<div class="empty"><h3>No authorized patients yet</h3><p>Create a patient record to begin.</p></div>{% endfor %}<div class="activity-block"><span class="eyebrow">RECENT VERIFIED ACTIVITY</span>{% for event in recent_activity %}<a href="/doctor/patients/{{ event.patient.id }}"><b>{{ event.label }}</b><span>{{ event.patient.name }} · {{ event.record.note_id }} · {{ event.record.encounter_date or 'date unavailable' }}</span></a>{% else %}<small>No reviewed clinical activity yet.</small>{% endfor %}</div></article><aside class="panel warm"><span class="eyebrow">QUICK ACTIONS</span><h2>Keep the record moving.</h2><a class="action-card" href="/doctor/notes/new"><b>Add a clinical note</b><small>Extract, review and approve facts</small><span>→</span></a><a class="action-card" href="/doctor/referral-summary"><b>Prepare referral summary</b><small>Generate from verified context</small><span>→</span></a></aside></section>
+{% endblock %}
+{% block scripts %}<script>
+const demoButton=document.querySelector('#load-demo'),demoStatus=document.querySelector('#demo-status');
+const demoNotes=[
+  {note_id:'note_1',facility_id:'facility_puskesmas',encounter_date:'2026-07-14',raw_text:'Pak Budi, 54 tahun, datang ke Puskesmas. Didiagnosis hipertensi. Mulai Amlodipin 5 mg sekali sehari oral. Pasien menyangkal nyeri dada.'},
+  {note_id:'note_2',facility_id:'facility_rsud',encounter_date:'2026-07-15',raw_text:'Rujukan dari Puskesmas. Amlodipine dihentikan karena edema tungkai. Mulai Lisinopril 10 mg sekali sehari oral untuk hipertensi.'},
+  {note_id:'note_3',facility_id:'facility_specialist',encounter_date:'2026-07-16',raw_text:'Tekanan darah terkontrol. Lanjutkan Lisinopril 10 mg sekali sehari. Denies chest pain.'}
+];
+const demoExtensions=[
+  {note_id:'note_4',facility_id:'facility_rsud',encounter_date:'2026-07-20',condition:{entity_type:'condition',name:'Dyslipidemia',status:'active',date:'2026-07-20',negated:false,discontinued:false,explicit_state_change:true,raw_text_span:'Didiagnosis dislipidemia'},medication:{entity_type:'medication',name:'Atorvastatin',dose:'20 mg',frequency:'once nightly',route:'oral',reason:'Dyslipidemia',prescriber:null,status:'active',start_date:'2026-07-20',end_date:null,negated:false,discontinued:false,explicit_state_change:true,raw_text_span:'Mulai Atorvastatin 20 mg setiap malam'},extras:[{entity_type:'lab',name:'LDL Cholesterol',value:'168',unit:'mg/dL',date:'2026-07-20',negated:false,discontinued:false,explicit_state_change:false,raw_text_span:'LDL 168 mg/dL'}]},
+  {note_id:'note_5',facility_id:'facility_specialist',encounter_date:'2026-07-23',condition:{entity_type:'condition',name:'Type 2 Diabetes Mellitus',status:'active',date:'2026-07-23',negated:false,discontinued:false,explicit_state_change:true,raw_text_span:'Diabetes melitus tipe 2 dikonfirmasi'},medication:{entity_type:'medication',name:'Metformin',dose:'500 mg',frequency:'twice daily',route:'oral',reason:'Type 2 Diabetes Mellitus',prescriber:null,status:'active',start_date:'2026-07-23',end_date:null,negated:false,discontinued:false,explicit_state_change:true,raw_text_span:'Mulai Metformin 500 mg dua kali sehari'},extras:[{entity_type:'lab',name:'HbA1c',value:'6.8',unit:'%',date:'2026-07-23',negated:false,discontinued:false,explicit_state_change:false,raw_text_span:'HbA1c 6.8%'}]}
+];
+function showDemoStatus(message,state='working'){demoStatus.hidden=false;demoStatus.dataset.state=state;demoStatus.textContent=message}
+async function apiJson(path,options){const response=await fetch(path,options),data=await response.json();if(!response.ok){const detail=typeof data.detail==='string'?data.detail:JSON.stringify(data.detail||data);throw new Error(detail)}return data}
+async function mergeDemo(note,entities,condition_links={}){return apiJson('/notes/merge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({patient_id:'patient_budi',note_id:note.note_id,facility_id:note.facility_id,encounter_date:note.encounter_date,reviewed_by:'{{ user.email }}',entities,condition_links})})}
+demoButton.onclick=async()=>{
+  demoButton.disabled=true;showDemoStatus('Checking Pak Budi’s connected record…');
+  try{
+    const graph=await apiJson('/patients/patient_budi/graph');
+    const imported=new Set(graph.nodes.flatMap(node=>node.provenance||[]));
+    const pending=demoNotes.filter(note=>!imported.has(note.note_id));
+    for(let index=0;index<pending.length;index++){
+      const note=pending[index];showDemoStatus(`Reviewing ${note.note_id} · ${index+1} of ${pending.length}…`);
+      const extraction=await apiJson('/notes/extract',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({patient_id:'patient_budi',patient_name:'Pak Budi',note_id:note.note_id,facility_id:note.facility_id,encounter_date:note.encounter_date,raw_text:note.raw_text})});
+      await mergeDemo(note,extraction.entities);
+    }
+    let current=await apiJson('/patients/patient_budi/graph');
+    for(let index=0;index<demoExtensions.length;index++){
+      const extension=demoExtensions[index];
+      if(current.nodes.some(node=>node.node_type==='medication'&&node.name===extension.medication.name))continue;
+      showDemoStatus(`Connecting ${extension.medication.name} to ${extension.condition.name}…`);
+      let condition=current.nodes.find(node=>node.node_type==='condition'&&node.name.toLowerCase()===extension.condition.name.toLowerCase());
+      if(!condition){const result=await mergeDemo(extension,[extension.condition]);condition=[...result.created,...result.updated].find(node=>node.node_type==='condition')}
+      if(!condition)throw new Error(`Could not create ${extension.condition.name}`);
+      await mergeDemo(extension,[extension.medication,...extension.extras],{[extension.medication.name]:condition.id});
+      current=await apiJson('/patients/patient_budi/graph');
+    }
+    showDemoStatus('Demo loaded: four medications, three conditions and two lab results are connected.','success');demoButton.textContent='Open Pak Budi';demoButton.disabled=false;demoButton.onclick=()=>location.href='/doctor/patients/patient_budi';
+  }catch(error){showDemoStatus(`Could not load demo: ${error.message}`,'error');demoButton.disabled=false}
+};
+</script>{% endblock %}

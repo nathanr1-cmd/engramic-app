@@ -1,0 +1,19 @@
+{% extends "base.html" %}{% block title %}{{ 'Create account' if mode == 'register' else 'Welcome back' }} — Engramic{% endblock %}
+{% block mainclass %}auth-page{% endblock %}{% block content %}
+<section class="auth-intro"><div class="eyebrow">CARE WITH CONTEXT</div><h1>{{ 'Join Engramic.' if mode == 'register' else 'Welcome back.' }}</h1><p>{{ 'Create a secure workspace for connected, understandable care.' if mode == 'register' else 'Your clinical context is ready when you are.' }}</p><blockquote>“A good record doesn’t just store facts. It preserves the story.”</blockquote></section>
+<section class="auth-card">
+  <div class="auth-heading"><span class="step-label">{{ 'NEW ACCOUNT' if mode == 'register' else 'SECURE SIGN IN' }}</span><h2>{{ 'Create your account' if mode == 'register' else 'Log in to Engramic' }}</h2></div>
+  {% if error %}<div class="alert" role="alert">{{ error }}</div>{% endif %}
+  <form method="post" action="/{{ mode }}" class="form-stack">
+    {% if mode == 'register' %}<label>Full name<input name="name" autocomplete="name" required placeholder="Your full name"></label>{% endif %}
+    <label>Email address<input type="email" name="email" autocomplete="email" required placeholder="you@example.com"></label>
+    <label>Password<input type="password" name="password" autocomplete="{{ 'new-password' if mode == 'register' else 'current-password' }}" required minlength="8" placeholder="At least 8 characters"></label>
+    {% if mode == 'register' %}<div class="notice">Public registration creates a patient account. Clinician accounts are provisioned by an administrator.</div>{% endif %}
+    <button class="button full" type="submit">{{ 'Create account' if mode == 'register' else 'Log in' }}</button>
+  </form>
+  {% if mode == 'login' %}<div class="demo-accounts"><b>Demo access</b><button type="button" data-email="doctor@engramic.id" data-password="Doctor123!">Doctor account</button><button type="button" data-email="patient@engramic.id" data-password="Patient123!">Patient account</button></div>{% endif %}
+  <p class="switch-auth">{{ 'Already have an account?' if mode == 'register' else 'New to Engramic?' }} <a href="/{{ 'login' if mode == 'register' else 'register' }}">{{ 'Log in' if mode == 'register' else 'Create an account' }}</a></p>
+</section>
+{% endblock %}{% block scripts %}<script>
+document.querySelectorAll('[data-email]').forEach(b=>b.onclick=()=>{document.querySelector('[name=email]').value=b.dataset.email;document.querySelector('[name=password]').value=b.dataset.password});
+</script>{% endblock %}

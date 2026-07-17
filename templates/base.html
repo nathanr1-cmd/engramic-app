@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}Engramic{% endblock %}</title>
+  <meta name="description" content="A clear, connected view of every patient story.">
+  <link rel="stylesheet" href="/static/app.css?v=20260717-v2">
+</head>
+<body class="role-{{ user.role if user else 'public' }}">
+  <div class="app-atmosphere" aria-hidden="true"><span></span><span></span><span></span></div>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Engramic home"><span class="brand-mark">E</span><span>engramic</span></a>
+    {% if user %}
+    <nav class="desktop-nav" aria-label="Main navigation">
+      {% if user.role == 'doctor' %}
+      <a class="{{ 'active' if request.url.path == '/doctor/dashboard' }}" href="/doctor/dashboard">Overview</a><a class="{{ 'active' if request.url.path.startswith('/doctor/patients') }}" href="/doctor/patients">Patients</a><a class="{{ 'active' if request.url.path.startswith('/doctor/conflicts') }}" href="/doctor/conflicts">Review</a><a class="{{ 'active' if request.url.path == '/doctor/notes/new' }}" href="/doctor/notes/new">New note</a><a class="{{ 'active' if request.url.path == '/doctor/referral-summary' }}" href="/doctor/referral-summary">Referral</a>
+      {% else %}
+      <a class="{{ 'active' if request.url.path == '/patient/dashboard' }}" href="/patient/dashboard">Overview</a><a class="{{ 'active' if request.url.path == '/patient/medications' }}" href="/patient/medications">Medications</a><a class="{{ 'active' if request.url.path == '/patient/conditions' }}" href="/patient/conditions">Conditions</a><a class="{{ 'active' if request.url.path == '/patient/history' }}" href="/patient/history">History</a>
+      {% endif %}
+    </nav>
+    <div class="account"><span class="avatar">{{ user.name[0] }}</span><span class="account-name">{{ user.name }}</span><form method="post" action="/logout"><button class="link-button">Sign out</button></form></div>
+    {% else %}
+    <nav class="public-nav"><a href="/login">Log in</a><a class="button small" href="/register">Create account</a></nav>
+    {% endif %}
+  </header>
+  <main class="{% block mainclass %}page{% endblock %}">{% block content %}{% endblock %}</main>
+  <footer><span>Engramic</span><span>Connected care, with context.</span><span>Clinical decisions always require professional review.</span></footer>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
