@@ -1,15 +1,20 @@
-{% extends "base.html" %}{% block title %}Engramic — Clinical context that stays connected{% endblock %}
+{% extends "base.html" %}{% block title %}Engramic &mdash; Clinical context that stays connected{% endblock %}
 {% block mainclass %}landing{% endblock %}{% block content %}
 <section class="hero">
   <div class="eyebrow">THE LIVING PATIENT RECORD</div>
   <h1>Care makes more sense<br>when the story stays connected.</h1>
-  <p>Engramic turns scattered clinical notes into a review-first health timeline—so doctors see the context and patients understand their care.</p>
-  <div class="hero-actions"><a class="button" href="/login">Open your workspace</a><a class="text-link" href="#how">See how it works <span>→</span></a></div>
+  <p>Engramic turns scattered clinical notes into a review-first health timeline&mdash;so doctors see the context and patients understand their care.</p>
+  <div class="hero-actions"><a class="button" href="/login">Open your workspace</a><a class="text-link" href="#how">See how it works <span>&rarr;</span></a></div>
   <div class="trust-row"><span>Human-reviewed</span><span>Source-linked</span><span>Patient-readable</span></div>
 </section>
 <section class="story-card" id="how">
-  <div class="story-copy"><span class="pill">ONE PATIENT · ONE CONTEXT</span><h2>From a line in a note<br>to a care story you can trust.</h2><p>Every medication, condition and change remains connected to its source. Nothing enters the record without clinical review.</p></div>
-  <div class="timeline-demo"><div class="demo-date">14 JUL <span>2026</span></div><div class="demo-line"></div><div class="demo-card"><b>Hypertension</b><span>Active condition</span><small>From clinical note · Puskesmas</small></div><div class="demo-card accent"><b>Amlodipine 5 mg</b><span>Started · once daily</span><small>Reviewed by Dr. Maya</small></div></div>
+  <div class="story-copy"><span class="pill">ONE PATIENT &middot; ONE CONTEXT</span><h2>From a line in a note<br>to a care story you can trust.</h2><p>Every medication, condition and change remains connected to its source. Nothing enters the record without clinical review.</p></div>
+  <div class="timeline-demo" aria-label="Example verified care timeline">
+    <time class="demo-date" datetime="2026-07-14"><strong>14</strong><span>JUL</span><small>2026</small></time>
+    <div class="demo-line" aria-hidden="true"></div>
+    <article class="demo-card condition-event"><b>Hypertension</b><span>Active condition</span><small>From clinical note &middot; Puskesmas</small></article>
+    <article class="demo-card medication-event accent"><b>Amlodipine 5 mg</b><span>Started &middot; once daily</span><small>Reviewed by Dr. Maya</small></article>
+  </div>
 </section>
 <section class="values"><article><span>01</span><h3>Review before record</h3><p>AI suggests. Clinicians decide. The verified record changes only after a human review.</p></article><article><span>02</span><h3>History stays visible</h3><p>Updates add context instead of erasing it, so teams can understand how care evolved.</p></article><article><span>03</span><h3>Built for both sides</h3><p>Clinical depth for doctors, clear language for the people whose health it represents.</p></article></section>
 {% endblock %}
