@@ -21,6 +21,9 @@ from web import router as web_router
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 app = FastAPI(title="Engramic API", version="0.1.0")
 ALLOWED_ORIGINS = [origin.strip().rstrip("/") for origin in os.environ.get("ENGRAMIC_ALLOWED_ORIGINS", "http://127.0.0.1:8000,http://localhost:8000").split(",") if origin.strip()]
+if render_url := os.environ.get("RENDER_EXTERNAL_URL", "").strip().rstrip("/"):
+    ALLOWED_ORIGINS.append(render_url)
+ALLOWED_ORIGINS = list(dict.fromkeys(ALLOWED_ORIGINS))
 app.add_middleware(CORSMiddleware, allow_origins=ALLOWED_ORIGINS, allow_credentials=True, allow_methods=["GET", "POST"], allow_headers=["Content-Type", "Accept"])
 
 

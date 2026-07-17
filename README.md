@@ -40,6 +40,18 @@ These accounts are seeded only when `ENGRAMIC_SEED_DEMO_ACCOUNTS=true`:
 
 Set `ENGRAMIC_SEED_DEMO_ACCOUNTS=false`, use a long random `ENGRAMIC_SESSION_SECRET`, and enable secure cookies before any shared deployment.
 
+## Deploy on Render
+
+The repository includes `render.yaml` for a persistent, single-instance demo deployment.
+
+1. In Render, choose **New > Blueprint** and connect this GitHub repository.
+2. Review the `engramic-app` service and create the Blueprint.
+3. Wait for `/health` to report healthy, then open the generated HTTPS URL.
+
+The Blueprint generates the session secret, enables secure cookies, and stores both SQLite databases and uploaded clinical documents under the attached `/var/data` disk. Keep the service at one instance because SQLite and the attached disk are local to that instance. Each push to `main` triggers a deployment to the same URL.
+
+The bundled demo accounts and cache contain synthetic data only. Disable `ENGRAMIC_SEED_DEMO_ACCOUNTS` and rotate credentials before using a shared deployment for anything beyond this project demo. Tesseract OCR availability depends on the host image; embedded PDF text and the rule-based/cache demo flow do not require an OpenAI key.
+
 ## Route map
 
 Public:
