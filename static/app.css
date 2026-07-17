@@ -124,3 +124,8 @@ body{color:var(--text);background:var(--bg)}body:before{background:radial-gradie
 .signal-card.tone-sky{background:radial-gradient(circle at 92% 105%,rgba(91,145,187,.68),transparent 57%),radial-gradient(circle at 4% -10%,rgba(130,187,174,.56),transparent 55%),linear-gradient(145deg,rgba(253,254,250,.94),rgba(229,238,238,.72))}
 .signal-card.tone-neutral{background:linear-gradient(145deg,rgba(255,255,255,.68),rgba(246,247,241,.42))}
 .signal-card{border-color:rgba(255,255,255,.82)!important;box-shadow:0 17px 38px rgba(71,78,73,.1),inset 0 1px 0 rgba(255,255,255,.92)!important;backdrop-filter:blur(28px) saturate(118%);-webkit-backdrop-filter:blur(28px) saturate(118%)}
+
+/* Neutral eggshell accents keep the chrome quiet beside the colored clinical cards. */
+:root{--lime:#d2d0c5;--lime-strong:#c1c0b6;--lime-soft:rgba(126,127,121,.11)}
+.brand-mark,.desktop-nav a.active,.button{border-color:rgba(89,92,88,.12);color:#2c3330;background:#d2d0c5;box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}.button:hover{color:#252b29;background:#c1c0b6}.link-button,.text-link,.row-action,.back,.panel-head>a,.breadcrumb a,.switch-auth a,.reassurance a,.section-item summary,.clinical-row summary,.preview-panel summary{color:#696f6b}.eyebrow,.step-label{color:#777b77}.avatar{color:#626863}.tag.active{border-color:rgba(104,108,104,.18);color:#626762;background:rgba(126,127,121,.1)}.status-dot{background:#aaa99f}.count{color:#656a66;background:rgba(126,127,121,.11)}:focus-visible{outline-color:#9c9c94}
+.metric-grid .signal-card,.metric-grid .signal-card>span,.metric-grid .signal-card strong,.metric-grid .signal-card small,.metric-grid .signal-card a{color:#fff!important;text-shadow:0 1px 4px rgba(48,39,34,.28)}
