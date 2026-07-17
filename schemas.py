@@ -71,6 +71,8 @@ class Patient(GraphNode):
     emergency_contact_relationship: str | None = None
     emergency_contact_phone: str | None = None
     assigned_facility_id: str | None = None
+    archived_at: datetime | None = None
+    archived_by: str | None = None
 
 
 class Condition(GraphNode):

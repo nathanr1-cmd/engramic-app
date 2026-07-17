@@ -31,9 +31,13 @@ def _render(request: Request, name: str, status_code: int = 200, **values):
     return templates.TemplateResponse(request=request, name=name, context=_context(request, **values), status_code=status_code)
 
 
-def _all_patients(user=None) -> list[Patient]:
+def _all_patients(user=None, *, archived: bool = False) -> list[Patient]:
     allowed = authorized_patient_ids(user) if user else set()
-    return sorted((node for node in STORE.nodes.values() if isinstance(node, Patient) and node.id in allowed), key=lambda p: p.name)
+    return sorted(
+        (node for node in STORE.nodes.values()
+         if isinstance(node, Patient) and node.id in allowed and (node.archived_at is not None) == archived),
+        key=lambda p: p.name,
+    )
 
 
 def _patient_data(patient_id: str) -> dict:
@@ -159,10 +163,13 @@ def doctor_dashboard(request: Request):
 
 
 @router.get("/doctor/patients", response_class=HTMLResponse)
-def doctor_patients(request: Request, q: str = ""):
+def doctor_patients(request: Request, q: str = "", view: str = "active"):
     user = require_role(request, "doctor")
-    patients = [p for p in _all_patients(user) if q.lower() in p.name.lower() or q.lower() in p.id.lower()]
-    return _render(request, "patients.html", user=user, patients=patients, query=q)
+    archived = view == "archived"
+    patients = [p for p in _all_patients(user, archived=archived) if q.lower() in p.name.lower() or q.lower() in p.id.lower()]
+    return _render(request, "patients.html", user=user, patients=patients, query=q,
+                   view="archived" if archived else "active",
+                   active_count=len(_all_patients(user)), archived_count=len(_all_patients(user, archived=True)))
 
 
 def _patient_form_values(form) -> dict:
@@ -266,6 +273,39 @@ async def doctor_patient_update(request: Request, patient_id: str):
     updated = STORE.update_patient(patient_id, values)
     clinical_db.audit("patient_edited", patient_id, user.email, before=before,
                       after=updated.model_dump(mode="json"))
+    return RedirectResponse(f"/doctor/patients/{patient_id}", status_code=303)
+
+
+@router.post("/doctor/patients/{patient_id}/archive")
+def doctor_patient_archive(request: Request, patient_id: str):
+    user = require_role(request, "doctor")
+    authorize_patient_access(request, patient_id)
+    patient = STORE.nodes.get(patient_id)
+    if not isinstance(patient, Patient):
+        return RedirectResponse("/doctor/patients", status_code=303)
+    if patient.archived_at is None:
+        before = patient.model_dump(mode="json")
+        updated = STORE.update_patient(patient_id, {
+            "archived_at": datetime.now(timezone.utc),
+            "archived_by": user.email,
+        })
+        clinical_db.audit("patient_archived", patient_id, user.email, before=before,
+                          after=updated.model_dump(mode="json"))
+    return RedirectResponse("/doctor/patients?view=archived", status_code=303)
+
+
+@router.post("/doctor/patients/{patient_id}/restore")
+def doctor_patient_restore(request: Request, patient_id: str):
+    user = require_role(request, "doctor")
+    authorize_patient_access(request, patient_id)
+    patient = STORE.nodes.get(patient_id)
+    if not isinstance(patient, Patient):
+        return RedirectResponse("/doctor/patients?view=archived", status_code=303)
+    if patient.archived_at is not None:
+        before = patient.model_dump(mode="json")
+        updated = STORE.update_patient(patient_id, {"archived_at": None, "archived_by": None})
+        clinical_db.audit("patient_restored", patient_id, user.email, before=before,
+                          after=updated.model_dump(mode="json"))
     return RedirectResponse(f"/doctor/patients/{patient_id}", status_code=303)
 
 

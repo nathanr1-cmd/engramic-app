@@ -226,6 +226,24 @@ class EngramicFlowTests(unittest.TestCase):
         self.assertEqual(resolved.status_code, 200, resolved.text)
         self.assertEqual(clinical_db.conflict(conflict["id"])["state"], "uncertain")
 
+    def test_patient_archive_is_reversible_and_audited(self):
+        client = self.doctor_client()
+        patient_id = "patient_archive_flow"
+        self.create_patient(client, patient_id)
+        self.assertIn(patient_id, client.get("/doctor/patients").text)
+
+        archived = client.post(f"/doctor/patients/{patient_id}/archive", follow_redirects=False)
+        self.assertEqual(archived.status_code, 303)
+        self.assertEqual(archived.headers["location"], "/doctor/patients?view=archived")
+        self.assertNotIn(patient_id, client.get("/doctor/patients").text)
+        self.assertIn(patient_id, client.get("/doctor/patients?view=archived").text)
+        self.assertTrue(any(row["event_type"] == "patient_archived" for row in clinical_db.audits_for(patient_id)))
+
+        restored = client.post(f"/doctor/patients/{patient_id}/restore", follow_redirects=False)
+        self.assertEqual(restored.status_code, 303)
+        self.assertIn(patient_id, client.get("/doctor/patients").text)
+        self.assertTrue(any(row["event_type"] == "patient_restored" for row in clinical_db.audits_for(patient_id)))
+
 
 if __name__ == "__main__":
     unittest.main()
