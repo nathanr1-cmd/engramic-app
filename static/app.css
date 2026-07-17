@@ -117,8 +117,9 @@ body{color:var(--text);background:var(--bg)}body:before{background:radial-gradie
 .clinical-graph-panel:fullscreen,.clinical-graph-panel.graph-expanded{background:#efeee8}
 
 /* Expressive overview fields: saturated at the perimeter, quiet beneath the data. */
-.signal-card.tone-mint{background:radial-gradient(ellipse at 52% 48%,rgba(255,255,250,.94) 0 8%,rgba(246,249,242,.72) 17%,rgba(255,255,255,0) 34%),linear-gradient(135deg,rgba(93,151,85,.84),rgba(164,198,145,.78) 46%,rgba(79,136,82,.86))}
-.signal-card.tone-coral{background:radial-gradient(circle at 56% 46%,rgba(255,255,252,.94) 0 7%,rgba(255,239,244,.64) 14%,rgba(255,255,255,0) 29%),linear-gradient(135deg,rgba(222,91,130,.82),rgba(204,61,109,.88) 52%,rgba(239,145,169,.78))}
+.signal-card.tone-mint{background:radial-gradient(ellipse at 52% 48%,rgba(255,255,250,.9) 0 5%,rgba(248,250,244,.7) 12%,rgba(242,247,238,.34) 23%,rgba(255,255,255,0) 39%),linear-gradient(135deg,rgba(93,151,85,.84),rgba(164,198,145,.78) 46%,rgba(79,136,82,.86))}
+.signal-card.tone-coral{background:radial-gradient(circle at 56% 46%,rgba(255,255,252,.88) 0 4%,rgba(255,239,244,.58) 12%,rgba(255,229,237,.26) 23%,rgba(255,255,255,0) 37%),linear-gradient(135deg,rgba(222,91,130,.82),rgba(204,61,109,.88) 52%,rgba(239,145,169,.78))}
+.signal-card.tone-orange{background:radial-gradient(ellipse at 54% 48%,rgba(255,255,250,.86) 0 5%,rgba(255,246,232,.56) 14%,rgba(255,237,213,.22) 27%,rgba(255,255,255,0) 42%),linear-gradient(135deg,rgba(211,112,47,.84),rgba(231,151,76,.78) 48%,rgba(196,89,40,.84))}
 .signal-card.tone-sunrise{background:radial-gradient(circle at 5% 110%,rgba(76,144,79,.82),rgba(113,169,98,.62) 28%,transparent 55%),radial-gradient(circle at 101% 18%,rgba(222,117,54,.84),rgba(236,154,86,.62) 30%,transparent 58%),linear-gradient(112deg,rgba(247,248,239,.9) 27%,rgba(255,253,247,.97) 54%,rgba(247,242,228,.88) 76%)}
 .signal-card.tone-sky{background:radial-gradient(circle at 92% 105%,rgba(91,145,187,.68),transparent 57%),radial-gradient(circle at 4% -10%,rgba(130,187,174,.56),transparent 55%),linear-gradient(145deg,rgba(253,254,250,.94),rgba(229,238,238,.72))}
 .signal-card.tone-neutral{background:linear-gradient(145deg,rgba(255,255,255,.68),rgba(246,247,241,.42))}
